@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bishub92.github.io/creator_tools/sitemap.xml
+Sitemap: https://bishub92.github.io/the-edit-bay/sitemap.xml
