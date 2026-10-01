@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aspect Ratio & Resolution Converter | The Edit Bay</title>
+<meta name="description" content="Convert frame dimensions between aspect ratios and get exact, encoder-safe resolutions for every platform.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Aspect Ratio Converter</div>
+<h1 class="page-title">Aspect Ratio &amp; Resolution Converter</h1>
+<p class="intro">Convert frame dimensions between aspect ratios and get exact, encoder-safe resolutions for every platform. Results are snapped to even numbers — H.264 and most encoders require even dimensions.</p>
+<div class="card">
+<div class="form-row">
+<div><label>Aspect ratio</label><select id="ar_ratio">
+<option value="1.7778">16:9 — Widescreen / YouTube</option>
+<option value="0.5625">9:16 — Vertical / Reels, TikTok, Shorts</option>
+<option value="1">1:1 — Square</option>
+<option value="0.8">4:5 — Portrait feed posts</option>
+<option value="1.5">3:2 — Photo / mirrorless stills</option>
+<option value="1.3333">4:3 — Classic TV</option>
+<option value="2.3333">21:9 — Ultrawide</option>
+<option value="2.39">2.39:1 — CinemaScope</option>
+</select></div>
+<div><label>Known width (px) <span style="font-weight:400">— leave blank to use height</span></label><input type="number" id="ar_w" placeholder="e.g. 1920"></div>
+<div><label>Known height (px)</label><input type="number" id="ar_h" placeholder="e.g. 1080"></div>
+</div>
+<button onclick="calcAR()">Convert</button>
+<div class="result" id="ar_res"></div>
+<h2 style="margin-top:28px">Common platform sizes</h2>
+<table class="specs">
+<tr><th>Use</th><th>Resolution</th><th>Ratio</th></tr>
+<tr><td>YouTube 1080p</td><td>1920 &times; 1080</td><td>16:9</td></tr>
+<tr><td>YouTube 4K</td><td>3840 &times; 2160</td><td>16:9</td></tr>
+<tr><td>Reels / TikTok / Shorts</td><td>1080 &times; 1920</td><td>9:16</td></tr>
+<tr><td>Instagram feed portrait</td><td>1080 &times; 1350</td><td>4:5</td></tr>
+<tr><td>Square post</td><td>1080 &times; 1080</td><td>1:1</td></tr>
+<tr><td>X / Twitter landscape</td><td>1280 &times; 720</td><td>16:9</td></tr>
+</table>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function calcAR(){
+  var ratio=parseFloat(document.getElementById('ar_ratio').value),
+      w=document.getElementById('ar_w').value, h=document.getElementById('ar_h').value,
+      r=document.getElementById('ar_res');
+  function even(n){ return Math.round(n/2)*2; }
+  if(w && !h){ var hh=even(w/ratio); r.classList.add('show'); r.innerHTML='<div class="big">'+w+' &times; '+hh+'</div><div class="sub">Height for '+w+'px wide at this ratio (snapped even).</div>'; }
+  else if(h && !w){ var ww=even(h*ratio); r.classList.add('show'); r.innerHTML='<div class="big">'+ww+' &times; '+h+'</div><div class="sub">Width for '+h+'px tall at this ratio (snapped even).</div>'; }
+  else { r.classList.add('show'); r.innerHTML='<span class="sub">Enter either a width or a height — not both.</span>'; }
+}
+
+</script>
+</body>
+</html>
