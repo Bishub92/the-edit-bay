@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Project Budget Estimator | The Edit Bay</title>
+<meta name="description" content="Estimate a realistic budget for a small video production with editable line items for crew, gear, post, and contingency.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Budget Estimator</div>
+<h1 class="page-title">Video Project Budget Estimator</h1>
+<p class="intro">Build a realistic line-item budget for a small video production — crew, gear, post, and contingency. Edit any row, add your own, and watch the total update. Built for producers quoting corporate, wedding, and indie work.</p>
+<div class="card">
+<table class="specs" id="bud_table">
+<tr><th>Item</th><th>Qty</th><th>Unit</th><th>Rate ($)</th><th>Line total</th><th></th></tr>
+</table>
+<button class="secondary" onclick="addRow()">+ Add line item</button>
+<div class="form-row" style="margin-top:16px">
+<div><label>Contingency (%)</label><input type="number" id="bud_cont" value="10" min="0" oninput="renderBud()"></div>
+</div>
+<div class="result show" id="bud_res" style="margin-top:16px"></div>
+<p class="note">Defaults reflect typical US freelance ranges for small productions — adjust every rate to your market. The 10% contingency is standard practice; productions without one routinely go over.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+var ROWS=[
+ ['Director / DP','1','day',1200],['Camera assistant','1','day',450],
+ ['Sound recordist','1','day',600],['Gaffer / grip','1','day',450],
+ ['Camera package rental','1','day',400],['Lighting / grip rental','1','day',250],
+ ['Location / permits','1','flat',300],['Editor','3','day',650],
+ ['Color grade','1','day',700],['Sound mix','1','day',600],
+ ['Music licensing','1','flat',250],['Hard drives / media','1','flat',150]
+];
+function addRow(name,qty,unit,rate){
+  var t=document.getElementById('bud_table'), tr=document.createElement('tr');
+  tr.innerHTML='<td><input type="text" value="'+(name||'New item')+'" oninput="renderBud()"></td>'
+   +'<td><input type="number" value="'+(qty==null?1:qty)+'" min="0" step="0.5" oninput="renderBud()"></td>'
+   +'<td><input type="text" value="'+(unit||'day')+'" oninput="renderBud()"></td>'
+   +'<td><input type="number" value="'+(rate==null?0:rate)+'" min="0" oninput="renderBud()"></td>'
+   +'<td class="lt"></td><td><button class="secondary" style="margin:0;padding:6px 10px" onclick="this.closest(\'tr\').remove();renderBud()">×</button></td>';
+  t.appendChild(tr); renderBud();
+}
+function renderBud(){
+  var rows=document.querySelectorAll('#bud_table tr'), sub=0;
+  rows.forEach(function(tr,i){
+    if(i===0) return;
+    var ins=tr.querySelectorAll('input');
+    var line=(+ins[1].value||0)*(+ins[3].value||0); sub+=line;
+    tr.querySelector('.lt').textContent='$'+line.toLocaleString('en-US',{maximumFractionDigits:0});
+  });
+  var c=+document.getElementById('bud_cont').value||0, cont=sub*c/100, total=sub+cont;
+  var r=document.getElementById('bud_res');
+  r.innerHTML='<div class="big">$'+total.toLocaleString('en-US',{maximumFractionDigits:0})+'</div>'
+   +'<div class="sub">Subtotal $'+sub.toLocaleString('en-US',{maximumFractionDigits:0})+' + '+c+'% contingency ($'+cont.toLocaleString('en-US',{maximumFractionDigits:0})+')</div>';
+}
+ROWS.forEach(function(x){ addRow(x[0],x[1],x[2],x[3]); });
+
+</script>
+</body>
+</html>
