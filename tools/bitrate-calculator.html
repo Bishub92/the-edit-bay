@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Bitrate Calculator | The Edit Bay</title>
+<meta name="description" content="Calculate the video bitrate you need to hit a target file size, or work backwards from bitrate to file size. Accounts for audio and container overhead.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Bitrate Calculator</div>
+<h1 class="page-title">Video Bitrate Calculator</h1>
+<p class="intro">Calculate the video bitrate you need to hit a target file size, or work backwards from a bitrate to predict file size. Built for editors who need to fit a deliverable under an upload limit — or just want to know how big that export will be.</p>
+<div class="card">
+<div class="tabs">
+<button class="active" onclick="showTab('t1',this)">Size &rarr; Bitrate</button>
+<button onclick="showTab('t2',this)">Bitrate &rarr; Size</button>
+</div>
+<div id="t1" class="tabpane active">
+<div class="form-row">
+<div><label>Target file size (MB)</label><input type="number" id="b_size" value="500" min="1"></div>
+<div><label>Duration: hours</label><input type="number" id="b_h" value="0" min="0"></div>
+<div><label>minutes</label><input type="number" id="b_m" value="10" min="0"></div>
+<div><label>seconds</label><input type="number" id="b_s" value="0" min="0"></div>
+<div><label>Audio bitrate (kbps)</label><input type="number" id="b_a" value="192" min="0"></div>
+</div>
+<button onclick="calcBitrate()">Calculate bitrate</button>
+<div class="result" id="b_res"></div>
+</div>
+<div id="t2" class="tabpane">
+<div class="form-row">
+<div><label>Video bitrate (Mbps)</label><input type="number" id="f_v" value="8" min="0.1" step="0.1"></div>
+<div><label>Audio bitrate (kbps)</label><input type="number" id="f_a" value="192" min="0"></div>
+<div><label>Duration: hours</label><input type="number" id="f_h" value="0" min="0"></div>
+<div><label>minutes</label><input type="number" id="f_m" value="10" min="0"></div>
+<div><label>seconds</label><input type="number" id="f_s" value="0" min="0"></div>
+</div>
+<button onclick="calcSize()">Calculate file size</button>
+<div class="result" id="f_res"></div>
+</div>
+<p class="note">Math: file size (bits) = total bitrate (bits/sec) &times; duration (sec). Sizes use decimal megabytes (1 MB = 1,000,000 bytes), the convention used by YouTube, Vimeo, and cloud storage. A ~2% allowance for container overhead is included — encoders hit bitrate targets on average, so aiming at 100% of a hard limit often lands over it.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function showTab(id, btn){
+  document.querySelectorAll('.tabpane').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active'); btn.classList.add('active');
+}
+function dur(h,m,s){ return h*3600+m*60+s; }
+function calcBitrate(){
+  var size=+document.getElementById('b_size').value, sec=dur(+document.getElementById('b_h').value,+document.getElementById('b_m').value,+document.getElementById('b_s').value), a=+document.getElementById('b_a').value;
+  var r=document.getElementById('b_res');
+  if(!(size>0)||!(sec>0)){ r.classList.add('show'); r.innerHTML='<span class="sub">Enter a valid size and duration.</span>'; return; }
+  var totalKbps=(size*8000/sec)*0.98, videoKbps=totalKbps-a;
+  if(videoKbps<=0){ r.classList.add('show'); r.innerHTML='<span class="sub">Target too small for this duration and audio bitrate.</span>'; return; }
+  r.classList.add('show');
+  r.innerHTML='<div class="big">'+videoKbps.toFixed(0)+' kbps <span style="font-size:1.1rem">('+(videoKbps/1000).toFixed(2)+' Mbps)</span></div>'
+    +'<div class="sub">Set your encoder\'s <strong>video</strong> bitrate to this (VBR target). Total stream incl. audio: '+totalKbps.toFixed(0)+' kbps. Includes 2% container-overhead allowance.</div>';
+}
+function calcSize(){
+  var v=+document.getElementById('f_v').value, a=+document.getElementById('f_a').value, sec=dur(+document.getElementById('f_h').value,+document.getElementById('f_m').value,+document.getElementById('f_s').value);
+  var r=document.getElementById('f_res');
+  if(!(v>0)||!(sec>0)){ r.classList.add('show'); r.innerHTML='<span class="sub">Enter a valid bitrate and duration.</span>'; return; }
+  var mb=(v*1e6+a*1e3)*sec/8/1e6;
+  r.classList.add('show');
+  r.innerHTML='<div class="big">'+mb.toFixed(1)+' MB <span style="font-size:1.1rem">('+(mb/1000).toFixed(2)+' GB)</span></div>'
+    +'<div class="sub">Estimated final file size at '+v+' Mbps video + '+a+' kbps audio.</div>';
+}
+
+</script>
+</body>
+</html>
