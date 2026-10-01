@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freelance Rate Calculator | The Edit Bay</title>
+<meta name="description" content="Work out the day rate you need to charge as a freelance videographer or editor, based on your income goal, expenses, and billable days.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Freelance Rate Calculator</div>
+<h1 class="page-title">Freelance Rate Calculator</h1>
+<p class="intro">Turn your income goal into a day rate that actually covers expenses, taxes, and time off. Most freelancers undercharge because they divide salary by 365 — this does the real math for videographers, editors, and shooters.</p>
+<div class="card">
+<div class="form-row">
+<div><label>Target annual take-home ($)</label><input type="number" id="rc_sal" value="75000" min="1"></div>
+<div><label>Annual business expenses ($)</label><input type="number" id="rc_exp" value="8000" min="0"></div>
+<div><label>Billable days per year</label><input type="number" id="rc_days" value="200" min="1"></div>
+<div><label>Profit / buffer margin (%)</label><input type="number" id="rc_margin" value="20" min="0"></div>
+</div>
+<button onclick="calcRate()">Calculate my rate</button>
+<div class="result" id="rc_res"></div>
+<p class="note">Billable days = days you can actually invoice. Start from 260 weekdays, then subtract vacation, sick days, holidays, and non-billable admin/marketing days — 180–220 is realistic for most freelancers. The margin covers taxes, slow months, and gear replacement.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function calcRate(){
+  var sal=+document.getElementById('rc_sal').value, exp=+document.getElementById('rc_exp').value,
+      days=+document.getElementById('rc_days').value, m=+document.getElementById('rc_margin').value;
+  var r=document.getElementById('rc_res');
+  if(!(sal>0)||!(days>0)){ r.classList.add('show'); r.innerHTML='<span class="sub">Enter a valid income goal and billable days.</span>'; return; }
+  var day=(sal+exp)*(1+m/100)/days, hr=day/8, half=day*0.6;
+  function $(n){ return '$'+n.toLocaleString('en-US',{maximumFractionDigits:0}); }
+  r.classList.add('show');
+  r.innerHTML='<div class="big">'+$(day)+' <span style="font-size:1.1rem">/ day</span></div>'
+    +'<div class="sub">Half day (up to 4h): <strong>'+$(half)+'</strong> &nbsp;·&nbsp; Hourly: <strong>'+$(hr)+'</strong> &nbsp;·&nbsp; Weekly (5 days): <strong>'+$(day*5)+'</strong><br>Based on '+$(sal+exp)+' revenue need across '+days+' billable days with '+m+'% margin.</div>';
+}
+
+</script>
+</body>
+</html>

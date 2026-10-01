@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frame / Timecode Converter | The Edit Bay</title>
+<meta name="description" content="Convert frame counts to HH:MM:SS:FF timecode and back at 23.976, 24, 25, 29.97, 30, 50, 59.94, and 60 fps.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Timecode Converter</div>
+<h1 class="page-title">Frame / Timecode Converter</h1>
+<p class="intro">Convert frame counts to HH:MM:SS:FF timecode and back, at any frame rate — including 23.976 and 29.97. For onset notes, edit lists, and VFX frame references.</p>
+<div class="card">
+<div class="tabs">
+<button class="active" onclick="showTab('tc1',this)">Frames &rarr; Timecode</button>
+<button onclick="showTab('tc2',this)">Timecode &rarr; Frames</button>
+</div>
+<div id="tc1" class="tabpane active">
+<div class="form-row">
+<div><label>Frame rate</label><select id="tc_fps">
+<option value="23.976">23.976 fps</option><option value="24" selected>24 fps</option>
+<option value="25">25 fps</option><option value="29.97">29.97 fps</option>
+<option value="30">30 fps</option><option value="50">50 fps</option>
+<option value="59.94">59.94 fps</option><option value="60">60 fps</option>
+</select></div>
+<div><label>Total frames</label><input type="number" id="tc_f" value="1440" min="0"></div>
+</div>
+<button onclick="framesToTC()">Convert to timecode</button>
+<div class="result" id="tc_res1"></div>
+</div>
+<div id="tc2" class="tabpane">
+<div class="form-row">
+<div><label>Frame rate</label><select id="tc_fps2">
+<option value="23.976">23.976 fps</option><option value="24" selected>24 fps</option>
+<option value="25">25 fps</option><option value="29.97">29.97 fps</option>
+<option value="30">30 fps</option><option value="50">50 fps</option>
+<option value="59.94">59.94 fps</option><option value="60">60 fps</option>
+</select></div>
+<div><label>Timecode (HH:MM:SS:FF)</label><input type="text" id="tc_in" value="00:01:00:00"></div>
+</div>
+<button onclick="tcToFrames()">Convert to frames</button>
+<div class="result" id="tc_res2"></div>
+</div>
+<p class="note">Uses non-drop-frame counting. NTSC rates (23.976, 29.97, 59.94) are handled with their exact fractional values (24000/1001 etc.), so frame counts stay accurate over long durations. True drop-frame timecode (used in US broadcast) skips frame numbers periodically — this tool does not apply drop-frame numbering.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function showTab(id, btn){
+  document.querySelectorAll('.tabpane').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active'); btn.classList.add('active');
+}
+function fpsRate(v){
+  var m={'23.976':24000/1001,'29.97':30000/1001,'59.94':60000/1001};
+  return m[v]||parseFloat(v);
+}
+function pad(n){ return String(n).padStart(2,'0'); }
+function framesToTC(){
+  var fps=fpsRate(document.getElementById('tc_fps').value), f=Math.floor(+document.getElementById('tc_f').value), r=document.getElementById('tc_res1');
+  if(!(f>=0)){ r.classList.add('show'); r.innerHTML='<span class="sub">Enter a valid frame count.</span>'; return; }
+  var fpsInt=Math.round(fps), totalSec=Math.floor(f/fps), ff=Math.round(f-totalSec*fps);
+  if(ff>=fpsInt){ ff=0; totalSec+=1; }
+  var hh=Math.floor(totalSec/3600), mm=Math.floor(totalSec%3600/60), ss=totalSec%60;
+  r.classList.add('show');
+  r.innerHTML='<div class="big">'+pad(hh)+':'+pad(mm)+':'+pad(ss)+':'+pad(ff)+'</div><div class="sub">Non-drop-frame timecode at '+document.getElementById('tc_fps').value+' fps. ('+(f/fps).toFixed(3)+' seconds)</div>';
+}
+function tcToFrames(){
+  var fps=fpsRate(document.getElementById('tc_fps2').value), t=document.getElementById('tc_in').value.trim(), r=document.getElementById('tc_res2');
+  var m=t.match(/^(\d+):(\d{1,2}):(\d{1,2})[:;](\d{1,2})$/);
+  if(!m){ r.classList.add('show'); r.innerHTML='<span class="sub">Use HH:MM:SS:FF format, e.g. 00:01:00:00.</span>'; return; }
+  var frames=((+m[1])*3600+(+m[2])*60+(+m[3]))*fps+(+m[4]);
+  r.classList.add('show');
+  r.innerHTML='<div class="big">'+Math.round(frames).toLocaleString('en-US')+' frames</div><div class="sub">Non-drop-frame count at '+document.getElementById('tc_fps2').value+' fps.</div>';
+}
+
+</script>
+</body>
+</html>

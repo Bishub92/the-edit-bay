@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video File Size Estimator | The Edit Bay</title>
+<meta name="description" content="Predict how big your exported video file will be from its bitrate and duration — no more surprise 40 GB uploads.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; File Size Estimator</div>
+<h1 class="page-title">Video File Size Estimator</h1>
+<p class="intro">Predict how big your exported file will be from its bitrate and duration — before you hit export. No more surprise 40&nbsp;GB uploads or blown client delivery limits.</p>
+<div class="card">
+<div class="form-row">
+<div><label>Video bitrate (Mbps)</label><input type="number" id="fs_v" value="8" min="0.1" step="0.1"></div>
+<div><label>Audio bitrate (kbps)</label><input type="number" id="fs_a" value="320" min="0"></div>
+<div><label>Duration: hours</label><input type="number" id="fs_h" value="0" min="0"></div>
+<div><label>minutes</label><input type="number" id="fs_m" value="10" min="0"></div>
+<div><label>seconds</label><input type="number" id="fs_s" value="0" min="0"></div>
+</div>
+<button onclick="calcFSize()">Estimate file size</button>
+<div class="result" id="fs_res"></div>
+<p class="note">Sizes use decimal units (1 GB = 1,000 MB = 1,000,000,000 bytes), matching YouTube, Vimeo, Dropbox, and drive manufacturers. VBR encodes vary with content complexity — treat the result as a planning estimate, typically within ±5%.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function calcFSize(){
+  var v=+document.getElementById('fs_v').value, a=+document.getElementById('fs_a').value,
+      sec=(+document.getElementById('fs_h').value)*3600+(+document.getElementById('fs_m').value)*60+(+document.getElementById('fs_s').value);
+  var r=document.getElementById('fs_res');
+  if(!(v>0)||!(sec>0)){ r.classList.add('show'); r.innerHTML='<span class="sub">Enter a valid bitrate and duration.</span>'; return; }
+  var mb=(v*1e6+a*1e3)*sec/8/1e6;
+  var disp = mb>=1000 ? (mb/1000).toFixed(2)+' GB' : mb.toFixed(1)+' MB';
+  r.classList.add('show');
+  r.innerHTML='<div class="big">'+disp+'</div><div class="sub">Estimated size at '+v+' Mbps video + '+a+' kbps audio ('+mb.toFixed(0)+' MB).</div>';
+}
+
+</script>
+</body>
+</html>

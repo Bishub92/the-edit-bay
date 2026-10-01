@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recording Time Estimator | The Edit Bay</title>
+<meta name="description" content="See how many hours and minutes of footage fit on a memory card or drive at your codec's bitrate, or how much storage a shoot day requires.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Recording Time Estimator</div>
+<h1 class="page-title">Recording Time Estimator</h1>
+<p class="intro">How much footage fits on your card or drive at a given bitrate — or how much storage a shoot day will need. Essential for wedding shooters, event videographers, and anyone who's ever run out of card mid-ceremony.</p>
+<div class="card">
+<div class="tabs">
+<button class="active" onclick="showTab('r1',this)">Storage &rarr; Time</button>
+<button onclick="showTab('r2',this)">Time &rarr; Storage</button>
+</div>
+<div id="r1" class="tabpane active">
+<div class="form-row">
+<div><label>Video bitrate (Mbps)</label><input type="number" id="rt_v" value="100" min="0.1" step="0.1"></div>
+<div><label>Audio bitrate (kbps)</label><input type="number" id="rt_a" value="0" min="0"></div>
+<div><label>Storage (GB)</label><input type="number" id="rt_gb" value="128" min="0.1" step="0.1"></div>
+</div>
+<label>Codec preset (optional — fills the bitrate)</label>
+<select id="rt_preset" onchange="if(this.value)document.getElementById('rt_v').value=this.value">
+<option value="">Custom bitrate…</option>
+<option value="220">ProRes 422 HQ 1080p — 220 Mbps</option>
+<option value="147">ProRes 422 1080p — 147 Mbps</option>
+<option value="102">ProRes 422 LT 1080p — 102 Mbps</option>
+<option value="100">XAVC S 4K / H.264 4K — 100 Mbps</option>
+<option value="50">H.264 1080p high quality — 50 Mbps</option>
+<option value="45">H.265 4K — 45 Mbps</option>
+</select>
+<button onclick="calcRecTime()">Calculate recording time</button>
+<div class="result" id="rt_res"></div>
+</div>
+<div id="r2" class="tabpane">
+<div class="form-row">
+<div><label>Video bitrate (Mbps)</label><input type="number" id="rs_v" value="100" min="0.1" step="0.1"></div>
+<div><label>Audio bitrate (kbps)</label><input type="number" id="rs_a" value="0" min="0"></div>
+<div><label>Hours of footage</label><input type="number" id="rs_h" value="4" min="0.1" step="0.1"></div>
+</div>
+<button onclick="calcRecStorage()">Calculate storage needed</button>
+<div class="result" id="rs_res"></div>
+</div>
+<p class="note">Uses decimal gigabytes (1 GB = 1,000,000,000 bytes), matching how card and drive manufacturers label capacity. Real-world record time runs ~3–5% under the math due to file-system overhead — round down for safety on critical shoots. ProRes figures are Apple's published specs for 1080p29.97.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function showTab(id, btn){
+  document.querySelectorAll('.tabpane').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active'); btn.classList.add('active');
+}
+function totalBps(vMbps,aKbps){ return vMbps*1e6 + aKbps*1e3; }
+function fmtHMS(sec){
+  var h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=Math.floor(sec%60);
+  return h+'h '+m+'m '+s+'s';
+}
+function calcRecTime(){
+  var v=+document.getElementById('rt_v').value, a=+document.getElementById('rt_a').value, gb=+document.getElementById('rt_gb').value;
+  var r=document.getElementById('rt_res');
+  if(!(v>0)||!(gb>0)){ r.classList.add('show'); r.innerHTML='<span class="sub">Enter a valid bitrate and storage size.</span>'; return; }
+  var sec=gb*8e9/totalBps(v,a);
+  r.classList.add('show');
+  r.innerHTML='<div class="big">'+fmtHMS(sec)+'</div><div class="sub">of continuous recording on '+gb+' GB at '+(v+a/1000).toFixed(1)+' Mbps total. ('+(sec/60).toFixed(0)+' minutes)</div>';
+}
+function calcRecStorage(){
+  var v=+document.getElementById('rs_v').value, a=+document.getElementById('rs_a').value, h=+document.getElementById('rs_h').value;
+  var r=document.getElementById('rs_res');
+  if(!(v>0)||!(h>0)){ r.classList.add('show'); r.innerHTML='<span class="sub">Enter a valid bitrate and duration.</span>'; return; }
+  var gb=totalBps(v,a)*h*3600/8/1e9;
+  r.classList.add('show');
+  r.innerHTML='<div class="big">'+gb.toFixed(1)+' GB</div><div class="sub">needed for '+h+' hours at '+(v+a/1000).toFixed(1)+' Mbps total. Add ~10% headroom for safety.</div>';
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>White Balance / Color Temperature Reference | The Edit Bay</title>
+<meta name="description" content="Explore the Kelvin color-temperature scale interactively and match real-world light sources to the right white balance setting.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; White Balance Reference</div>
+<h1 class="page-title">White Balance / Color Temperature Reference</h1>
+<p class="intro">An interactive Kelvin scale with real-world light sources — from candlelight to open shade. Drag the slider, see the color, and match your camera's white balance to the scene instead of fighting it in post.</p>
+<div class="card">
+<label>Color temperature: <span id="wb_val">5600</span> K</label>
+<input type="range" id="wb_k" min="1500" max="10000" value="5600" step="50" oninput="updateWB()">
+<div class="swatch" id="wb_swatch"></div>
+<div class="kelvin-marks"><span>1500K</span><span>4000K</span><span>6500K</span><span>10000K</span></div>
+<div class="result show" id="wb_res" style="margin-top:16px"></div>
+<h2 style="margin-top:28px">Common sources</h2>
+<table class="specs">
+<tr><th>Source</th><th>≈ Kelvin</th><th>Notes</th></tr>
+<tr><td>Candlelight</td><td>1,900 K</td><td>Very warm; white balance rarely used</td></tr>
+<tr><td>Tungsten / incandescent</td><td>3,200 K</td><td>Classic indoor practicals; camera "tungsten" preset</td></tr>
+<tr><td>Fluorescent / office</td><td>4,000 K</td><td>Can carry a green spike — check tint, not just temp</td></tr>
+<tr><td>Direct daylight, noon</td><td>5,600 K</td><td>Camera "daylight" preset</td></tr>
+<tr><td>Overcast sky</td><td>6,500 K</td><td>Soft, neutral-cool</td></tr>
+<tr><td>Open shade / blue sky</td><td>7,500 K</td><td>Noticeably blue without correction</td></tr>
+</table>
+<p class="note">Swatch colors are approximations of black-body radiation for reference — real sources (especially fluorescents and LEDs) shift green/magenta too, which Kelvin alone doesn't describe. When mixing sources, gel or replace the odd one out rather than splitting the difference.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function kelvinToRGB(k){
+  var t=k/100, r,g,b;
+  r = t<=66 ? 255 : 329.698727446*Math.pow(t-60,-0.1332047592);
+  g = t<=66 ? 99.4708025861*Math.log(t)-161.1195681661 : 288.1221695283*Math.pow(t-60,-0.0755148492);
+  b = t>=66 ? 255 : (t<=19 ? 0 : 138.5177312231*Math.log(t-10)-305.0447927307);
+  function c(x){ return Math.max(0,Math.min(255,Math.round(x))); }
+  return [c(r),c(g),c(b)];
+}
+var SOURCES=[[1900,'Candlelight'],[3200,'Tungsten / incandescent'],[4000,'Fluorescent / office'],[5600,'Direct daylight'],[6500,'Overcast sky'],[7500,'Open shade']];
+function updateWB(){
+  var k=+document.getElementById('wb_k').value, rgb=kelvinToRGB(k), r=document.getElementById('wb_res');
+  document.getElementById('wb_val').textContent=k;
+  document.getElementById('wb_swatch').style.background='rgb('+rgb.join(',')+')';
+  var best=SOURCES[0];
+  SOURCES.forEach(function(s){ if(Math.abs(s[0]-k)<Math.abs(best[0]-k)) best=s; });
+  r.innerHTML='<div class="sub">Closest common source: <strong>'+best[1]+'</strong> ('+best[0]+' K). Set your camera white balance near '+k+' K'+(k<4000?' — warm scene, cool it down':'')+(k>6500?' — cool scene, warm it up':'')+'.</div>';
+}
+updateWB();
+
+</script>
+</body>
+</html>

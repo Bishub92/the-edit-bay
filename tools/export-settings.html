@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Export Settings Cheat Sheet | The Edit Bay</title>
+<meta name="description" content="The correct resolution, codec, bitrate, and audio settings for every major platform — verified against current platform recommendations.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Export Settings</div>
+<h1 class="page-title">Export Settings Cheat Sheet</h1>
+<p class="intro">Copy-paste export presets for every major platform — resolution, codec, bitrate, and audio, verified against current platform recommendations. Every platform re-encodes your upload, so the goal is giving it a clean, high-quality source.</p>
+<div class="card">
+<div class="tabs">
+<button class="active" onclick="showTab('ex1',this)">YouTube</button>
+<button onclick="showTab('ex2',this)">Shorts / TikTok / Reels</button>
+<button onclick="showTab('ex3',this)">X / Twitter</button>
+</div>
+<div id="ex1" class="tabpane active">
+<h2>YouTube (long-form)</h2>
+<table class="specs">
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Container</td><td>MP4 (moov atom at front / "Fast Start")</td></tr>
+<tr><td>Video codec</td><td>H.264, High Profile, progressive</td></tr>
+<tr><td>Audio</td><td>AAC-LC, 48 kHz, 320 kbps stereo</td></tr>
+<tr><td>Frame rate</td><td>Match source (24 / 25 / 30 / 60)</td></tr>
+<tr><td>1080p bitrate</td><td>8 Mbps (30 fps) · 12 Mbps (60 fps)</td></tr>
+<tr><td>1440p bitrate</td><td>16 Mbps (30 fps) · 24 Mbps (60 fps)</td></tr>
+<tr><td>4K bitrate</td><td>35–45 Mbps (30 fps) · 53–68 Mbps (60 fps)</td></tr>
+<tr><td>Encoding</td><td>VBR, 2-pass; chroma 4:2:0</td></tr>
+</table>
+<p class="note">Practical tip: uploading ~50% above YouTube's published floor (e.g. 12 Mbps for 1080p30) gives the re-encode chain more headroom and visibly reduces compression artifacts on detailed footage.</p>
+</div>
+<div id="ex2" class="tabpane">
+<h2>YouTube Shorts · TikTok · Instagram Reels</h2>
+<table class="specs">
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Resolution</td><td>1080 &times; 1920 (9:16)</td></tr>
+<tr><td>Container / codec</td><td>MP4 / H.264 High Profile</td></tr>
+<tr><td>Frame rate</td><td>30 fps (match source; 60 only for action)</td></tr>
+<tr><td>Video bitrate</td><td>8–12 Mbps VBR</td></tr>
+<tr><td>Audio</td><td>AAC, 48 kHz (44.1 accepted), 192–320 kbps</td></tr>
+<tr><td>Color</td><td>SDR / Rec.709 (avoid HDR unless you know the workflow)</td></tr>
+<tr><td>Loudness</td><td>≈ −14 LUFS integrated, −1 dBTP true peak</td></tr>
+</table>
+<p class="note">Keep key text and faces inside the central safe zone — interface overlays crop the top ~250 px and bottom ~250 px in feed views, and profile grids crop to square.</p>
+</div>
+<div id="ex3" class="tabpane">
+<h2>X / Twitter</h2>
+<table class="specs">
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Max resolution</td><td>1280 &times; 720 (platform-enforced)</td></tr>
+<tr><td>Max duration</td><td>2 minutes 20 seconds</td></tr>
+<tr><td>Max file size</td><td>512 MB</td></tr>
+<tr><td>Codec</td><td>H.264 / MP4, AAC audio</td></tr>
+<tr><td>Recommended</td><td>720p, 8–10 Mbps, 30 fps</td></tr>
+</table>
+</div>
+<p class="note">Specs reflect platform recommendations as of 2026. Platforms change these quietly — when in doubt, a clean 1080p H.264 master at 8–12 Mbps is the universal safe encode.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function showTab(id, btn){
+  document.querySelectorAll('.tabpane').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active'); btn.classList.add('active');
+}
+
+</script>
+</body>
+</html>

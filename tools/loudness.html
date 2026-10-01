@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audio Loudness (LUFS) Guide | The Edit Bay</title>
+<meta name="description" content="Look up the correct integrated loudness (LUFS) and true-peak targets for every major platform, and check whether your mix will be turned down.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Loudness Guide</div>
+<h1 class="page-title">Audio Loudness (LUFS) Guide</h1>
+<p class="intro">The correct integrated loudness and true-peak targets for every major platform — plus a checker that tells you whether your mix will get turned down. Because every platform normalizes, and a crushed master just gets quieter.</p>
+<div class="card">
+<h2>Platform targets</h2>
+<table class="specs">
+<tr><th>Platform / standard</th><th>Integrated loudness</th><th>True peak ceiling</th><th>Notes</th></tr>
+<tr><td>YouTube</td><td>−14 LUFS</td><td>−1 dBTP</td><td>Normalizes to −14; only turns down, never up</td></tr>
+<tr><td>Spotify</td><td>−14 LUFS</td><td>−1 dBTP</td><td>Normalizes at playback</td></tr>
+<tr><td>Apple Music</td><td>−16 LUFS</td><td>−1 dBTP</td><td>Sound Check; turns down only</td></tr>
+<tr><td>TikTok / Instagram</td><td>≈ −14 LUFS</td><td>−1 dBTP</td><td>No published target; −14 is the safe working value</td></tr>
+<tr><td>Podcast (stereo / mono)</td><td>−16 / −19 LUFS</td><td>−1 dBTP</td><td>Mono reads ~3 LU louder than stereo</td></tr>
+<tr><td>US broadcast (ATSC A/85)</td><td>−24 LKFS</td><td>−2 dBTP</td><td>Hard delivery spec (CALM Act)</td></tr>
+<tr><td>EU broadcast (EBU R128)</td><td>−23 LUFS</td><td>−1 dBTP</td><td>Hard delivery spec</td></tr>
+<tr><td>Netflix</td><td>−27 LKFS</td><td>−2 dBTP</td><td>Dialogue-gated; not comparable to program LUFS</td></tr>
+</table>
+<h2>Will my mix be turned down?</h2>
+<div class="form-row">
+<div><label>Platform</label><select id="ld_p">
+<option value="-14">YouTube (−14)</option><option value="-14">Spotify (−14)</option>
+<option value="-16">Apple Music (−16)</option><option value="-14">TikTok / Instagram (−14)</option>
+<option value="-16">Podcast stereo (−16)</option>
+</select></div>
+<div><label>Your mix, integrated LUFS (e.g. −9)</label><input type="number" id="ld_m" value="-9" step="0.1"></div>
+</div>
+<button onclick="checkLoud()">Check</button>
+<div class="result" id="ld_res"></div>
+<p class="note">LUFS and LKFS are the same unit (European vs. US broadcast naming). These targets are playback levels, not creative mandates — a well-balanced master at −9 LUFS keeps its character after normalization; a mix strangled to exactly −14 gains nothing. Always verify with a true-peak meter: inter-sample peaks can exceed 0 dBTP even when samples don't.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+
+function checkLoud(){
+  var t=parseFloat(document.getElementById('ld_p').value), m=parseFloat(document.getElementById('ld_m').value), r=document.getElementById('ld_res');
+  if(!isFinite(m)){ r.classList.add('show'); r.innerHTML='<span class="sub">Enter your measured integrated loudness.</span>'; return; }
+  var gain=m-t, msg;
+  if(gain>0.5) msg='Turned <strong>down</strong> by '+gain.toFixed(1)+' dB. Your dynamics survive — the loudness advantage does not.';
+  else if(gain<-0.5) msg='Played as-is (this platform only turns down). It will sound '+Math.abs(gain).toFixed(1)+' dB quieter than normalized content.';
+  else msg='Right on target — no gain change applied.';
+  r.classList.add('show');
+  r.innerHTML='<div class="big" style="font-size:1.4rem">'+msg+'</div><div class="sub">Platform target: '+t+' LUFS · Your mix: '+m+' LUFS</div>';
+}
+
+</script>
+</body>
+</html>
