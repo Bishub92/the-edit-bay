@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shutter Angle Converter | The Edit Bay</title>
+<meta name="description" content="Convert between shutter angle and shutter speed at any frame rate. Get the 180-degree look right every time, from 23.976 to 60 fps.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Shutter Angle Converter</div>
+<h1 class="page-title">Shutter Angle &harr; Shutter Speed</h1>
+<p class="intro">Cinema cameras think in shutter angle, hybrid cameras in shutter speed. Convert between them at your exact frame rate — and see the classic angles (90&deg;, 144&deg;, 180&deg;, 360&deg;) at a glance.</p>
+<div class="card">
+<div class="tabs">
+<button class="active" onclick="showTab('t1',this)">Angle &rarr; Speed</button>
+<button onclick="showTab('t2',this)">Speed &rarr; Angle</button>
+</div>
+<div id="t1" class="tabpane active">
+<div class="form-row">
+<div><label>Frame rate (fps)</label><select id="s_fps1"><option>23.976</option><option>24</option><option>25</option><option>29.97</option><option>30</option><option>50</option><option>59.94</option><option>60</option><option>120</option><option>240</option></select></div>
+<div><label>Shutter angle (&deg;)</label><input type="number" id="s_angle" value="180" min="1" max="360"></div>
+</div>
+<button onclick="calcAngleToSpeed()">Convert to shutter speed</button>
+<div class="result" id="s_res1"></div>
+</div>
+<div id="t2" class="tabpane">
+<div class="form-row">
+<div><label>Frame rate (fps)</label><select id="s_fps2"><option>23.976</option><option>24</option><option>25</option><option>29.97</option><option>30</option><option>50</option><option>59.94</option><option>60</option><option>120</option><option>240</option></select></div>
+<div><label>Shutter speed (1/X sec)</label><input type="number" id="s_speed" value="48" min="1" step="1"></div>
+</div>
+<button onclick="calcSpeedToAngle()">Convert to shutter angle</button>
+<div class="result" id="s_res2"></div>
+</div>
+<div class="card" style="margin-top:1em">
+<h3 style="margin-top:0">Common angles at 24 fps</h3>
+<p style="margin-bottom:0"><strong>180&deg;</strong> &rarr; 1/48 s — the cinematic default. &nbsp;<strong>90&deg;</strong> &rarr; 1/96 s — crisper motion (Saving Private Ryan look). &nbsp;<strong>360&deg;</strong> &rarr; 1/24 s — maximum blur, useful in low light. &nbsp;<strong>144&deg;</strong> &rarr; 1/60 s — kills fluorescent flicker under 60 Hz lighting.</p>
+</div>
+</div>
+<p class="note">Math: exposure time (sec) = (angle &divide; 360) &times; (1 &divide; fps). A 180&deg; shutter exposes for half of each frame's duration — at 24 fps that's 1/48 s, the look audiences read as "cinema". Use 144&deg; (1/60) under 60 Hz lights or 172.8&deg; (1/50) under 50 Hz lights to avoid flicker.</p>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+function showTab(id, btn){
+  var panes = document.querySelectorAll('.tabpane');
+  panes.forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  var tabs = document.querySelectorAll('.tabs button');
+  tabs.forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+function fpsVal(id){ return parseFloat(document.getElementById(id).value); }
+function calcAngleToSpeed(){
+  var fps = fpsVal('s_fps1'), angle = parseFloat(document.getElementById('s_angle').value) || 0;
+  if (angle <= 0 || angle > 360){ document.getElementById('s_res1').textContent = 'Enter an angle between 1 and 360.'; return; }
+  var t = (angle/360) * (1/fps);
+  var denom = Math.round(1/t);
+  document.getElementById('s_res1').innerHTML = angle + '&deg; at ' + fps + ' fps = <strong>1/' + denom + ' s</strong> (' + t.toFixed(4) + ' sec)';
+}
+function calcSpeedToAngle(){
+  var fps = fpsVal('s_fps2'), x = parseFloat(document.getElementById('s_speed').value) || 0;
+  if (x <= 0){ document.getElementById('s_res2').textContent = 'Enter a valid shutter speed.'; return; }
+  var angle = (1/x) * fps * 360;
+  document.getElementById('s_res2').innerHTML = '1/' + x + ' s at ' + fps + ' fps = <strong>' + angle.toFixed(1) + '&deg;</strong>';
+}
+</script>
+</body>
+</html>

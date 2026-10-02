@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Time Calculator | The Edit Bay</title>
+<meta name="description" content="Estimate how long a video upload will take from file size and connection speed. Accounts for real-world overhead so you stop missing delivery deadlines.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Upload Time Calculator</div>
+<h1 class="page-title">Upload Time Calculator</h1>
+<p class="intro">How long will that export take to reach YouTube, Frame.io, or a client's Dropbox? Enter file size and your upload speed to find out — with real-world overhead included.</p>
+<div class="card">
+<div class="form-row">
+<div><label>File size</label><input type="number" id="u_size" value="2" min="0.01" step="0.01"></div>
+<div><label>Size unit</label><select id="u_unit"><option value="GB">GB</option><option value="MB">MB</option><option value="TB">TB</option></select></div>
+<div><label>Upload speed (Mbps)</label><input type="number" id="u_speed" value="10" min="0.1" step="0.1"></div>
+<div><label>Efficiency</label><select id="u_eff"><option value="0.75">Typical (75% of advertised)</option><option value="0.9">Good connection (90%)</option><option value="1">Theoretical max (100%)</option></select></div>
+</div>
+<button onclick="calcUpload()">Calculate upload time</button>
+<div class="result" id="u_res"></div>
+</div>
+<p class="note">Math: time (sec) = file size (bits) &divide; (speed &times; efficiency). Bits per byte use 8 &times; decimal GB (the way ISPs quote speed), and the efficiency factor accounts for protocol overhead and congestion — ISPs advertise downstream best-case, uploads on cable/fiber usually land lower. Common checks: 10 Mbps up is typical US cable; symmetrical fiber can hit 100+ Mbps.</p>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+function showTab(){}
+function calcUpload(){
+  var size = parseFloat(document.getElementById('u_size').value) || 0;
+  var unit = document.getElementById('u_unit').value;
+  var speed = parseFloat(document.getElementById('u_speed').value) || 0;
+  var eff = parseFloat(document.getElementById('u_eff').value);
+  var bytes = size * (unit==='GB' ? 1e9 : unit==='MB' ? 1e6 : 1e12);
+  var bits = bytes * 8;
+  var effMbps = speed * eff;
+  if (bits <= 0 || effMbps <= 0){ document.getElementById('u_res').textContent = 'Enter a valid size and speed.'; return; }
+  var secs = bits / (effMbps * 1e6);
+  var h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = Math.round(secs%60);
+  var str = (h>0 ? h + 'h ' : '') + m + 'm ' + s + 's';
+  document.getElementById('u_res').innerHTML = 'Estimated upload time: <strong>' + str + '</strong><br><span style="font-size:.85em">at ' + effMbps.toFixed(1) + ' Mbps effective (' + (eff*100).toFixed(0) + '% efficiency)</span>';
+}
+</script>
+</body>
+</html>

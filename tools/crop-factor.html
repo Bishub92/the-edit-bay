@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop Factor & Equivalent Focal Length | The Edit Bay</title>
+<meta name="description" content="See what any lens looks like on any camera. Enter a focal length and sensor size to get the full-frame equivalent and horizontal field of view.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Crop Factor Calculator</div>
+<h1 class="page-title">Crop Factor &amp; Equivalent Focal Length</h1>
+<p class="intro">A 35mm lens doesn't look like a 35mm on every camera. Pick your sensor size, enter the lens focal length, and get the full-frame equivalent plus the horizontal field of view.</p>
+<div class="card">
+<div class="form-row">
+<div><label>Camera sensor</label><select id="c_sensor">
+<option value="36|1">Full frame (36 &times; 24 mm) &mdash; &times;1.0</option>
+<option value="22.3|1.6">APS-C Canon (22.3 &times; 14.9 mm) &mdash; &times;1.6</option>
+<option value="23.5|1.5" selected>APS-C Sony / Nikon (23.5 &times; 15.6 mm) &mdash; &times;1.5</option>
+<option value="24.89|1.45">Super 35 (24.89 &times; 18.66 mm) &mdash; &times;1.45</option>
+<option value="17.3|2">Micro Four Thirds (17.3 &times; 13 mm) &mdash; &times;2.0</option>
+<option value="13.2|2.7">1-inch type (13.2 &times; 8.8 mm) &mdash; &times;2.7</option>
+</select></div>
+<div><label>Lens focal length (mm)</label><input type="number" id="c_focal" value="35" min="1" step="0.1"></div>
+</div>
+<button onclick="calcCrop()">Calculate equivalent</button>
+<div class="result" id="c_res"></div>
+</div>
+<p class="note">Math: equivalent focal length = focal length &times; crop factor (36 &divide; sensor width). Horizontal FOV = 2 &times; arctan(sensor width &divide; 2 &divide; focal length). Note: crop factor only changes framing — the lens's depth of field and aperture behavior don't magically change, though the longer working distance does affect how backgrounds look.</p>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+function calcCrop(){
+  var parts = document.getElementById('c_sensor').value.split('|');
+  var w = parseFloat(parts[0]), crop = parseFloat(parts[1]);
+  var f = parseFloat(document.getElementById('c_focal').value) || 0;
+  if (f <= 0){ document.getElementById('c_res').textContent = 'Enter a valid focal length.'; return; }
+  var equiv = f * crop;
+  var fov = 2 * Math.atan(w / (2 * f)) * 180 / Math.PI;
+  document.getElementById('c_res').innerHTML = '<strong>' + f + 'mm &rarr; ' + equiv.toFixed(1) + 'mm equivalent</strong> (&times;' + crop.toFixed(2) + ' crop)<br><span style="font-size:.85em">Horizontal field of view: ' + fov.toFixed(1) + '&deg;</span>';
+}
+</script>
+</body>
+</html>
