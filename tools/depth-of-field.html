@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Depth of Field Calculator | The Edit Bay</title>
+<meta name="description" content="Free depth of field calculator for video: enter focal length, aperture, sensor size and subject distance to get hyperfocal distance, near/far focus limits, and total DoF.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; Depth of Field Calculator</div>
+<h1 class="page-title">Depth of Field Calculator</h1>
+<p class="intro">How much of your shot will be in acceptable focus? Enter your lens, aperture, sensor size, and how far away your subject is — get the hyperfocal distance, near and far focus limits, and total depth of field.</p>
+<div class="card">
+<div class="form-row">
+<div><label>Sensor size (sets circle of confusion)</label><select id="d_coc">
+<option value="0.030">Full frame (36 &times; 24 mm) — CoC 0.030 mm</option>
+<option value="0.020" selected>APS-C Sony / Nikon (23.5 &times; 15.6 mm) — CoC 0.020 mm</option>
+<option value="0.019">APS-C Canon (22.3 &times; 14.9 mm) — CoC 0.019 mm</option>
+<option value="0.019">Super 35 (24.89 &times; 18.66 mm) — CoC 0.019 mm</option>
+<option value="0.015">Micro Four Thirds (17.3 &times; 13 mm) — CoC 0.015 mm</option>
+<option value="0.011">1-inch type (13.2 &times; 8.8 mm) — CoC 0.011 mm</option>
+</select></div>
+<div><label>Lens focal length (mm)</label><input type="number" id="d_f" value="35" min="1" step="0.1"></div>
+<div><label>Aperture (f-number)</label><select id="d_n">
+<option value="1">f/1.0</option><option value="1.2">f/1.2</option><option value="1.4">f/1.4</option>
+<option value="1.8" selected>f/1.8</option><option value="2">f/2.0</option><option value="2.8">f/2.8</option>
+<option value="3.5">f/3.5</option><option value="4">f/4.0</option><option value="5.6">f/5.6</option>
+<option value="8">f/8.0</option><option value="11">f/11</option><option value="16">f/16</option><option value="22">f/22</option>
+</select></div>
+<div><label>Subject distance (meters)</label><input type="number" id="d_s" value="3" min="0.01" step="0.01"></div>
+</div>
+<button onclick="calcDoF()">Calculate depth of field</button>
+<div class="result" id="d_res"></div>
+<p class="note">Math: hyperfocal distance H = f&sup2; &divide; (N &times; c) + f. Near limit = s(H − f) &divide; (H + (s − f)); far limit = s(H − f) &divide; (H − (s − f)). When the subject is at or beyond the hyperfocal distance, the far limit extends to infinity. This is the standard simplified thin-lens model — it describes acceptable sharpness at typical viewing, not pixel-perfect focus, and it breaks down at macro distances and with very fast lenses where focus breathing and field curvature matter.</p>
+</div>
+
+<h2>Related tools</h2>
+<ul>
+<li><a href="crop-factor.html"><strong>Crop Factor Calculator</strong></a> — sensor size changes your effective focal length, which changes depth of field.</li>
+<li><a href="shutter-angle.html"><strong>Shutter Angle Converter</strong></a> — the other exposure pairing: shutter speed for the aperture you picked.</li>
+<li><a href="aspect-ratio.html"><strong>Aspect Ratio Converter</strong></a> — frame the shot first, then check what stays in focus.</li>
+</ul>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+function fmtDist(mm){
+  if (!isFinite(mm)) return 'infinity';
+  var m = mm / 1000;
+  if (m >= 1) return m.toFixed(2) + ' m';
+  return (mm / 10).toFixed(1) + ' cm';
+}
+function calcDoF(){
+  var coc = parseFloat(document.getElementById('d_coc').value),
+      f = parseFloat(document.getElementById('d_f').value),
+      N = parseFloat(document.getElementById('d_n').value),
+      s = (parseFloat(document.getElementById('d_s').value) || 0) * 1000,
+      r = document.getElementById('d_res');
+  if (!(f > 0) || !(N > 0) || !(s > 0)){
+    r.classList.add('show');
+    r.innerHTML = '<span class="sub">Enter a valid focal length, aperture, and subject distance.</span>';
+    return;
+  }
+  var H = f * f / (N * coc) + f;                       // hyperfocal distance, mm
+  var near = s * (H - f) / (H + (s - f));
+  var far, dof;
+  if (s >= H){ far = Infinity; dof = Infinity; }
+  else { far = s * (H - f) / (H - (s - f)); dof = far - near; }
+  var dofTxt = isFinite(dof) ? '<div class="big">' + fmtDist(dof) + '</div>' :
+    '<div class="big">Infinite DoF</div><div class="sub">far limit extends to infinity</div>';
+  r.classList.add('show');
+  r.innerHTML = '<div class="sub">In acceptable focus from <strong>' + fmtDist(near) +
+    '</strong> to <strong>' + fmtDist(far) + '</strong> (hyperfocal distance: ' + fmtDist(H) + ')</div>' +
+    dofTxt +
+    '<div class="sub">' + f + 'mm @ f/' + N + ', subject at ' + (s / 1000) + ' m</div>';
+}
+</script>
+</body>
+</html>
