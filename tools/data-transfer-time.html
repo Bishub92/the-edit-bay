@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Transfer Time Calculator — How Long to Copy Files? | The Edit Bay</title>
+<meta name="description" content="Estimate how long a file transfer or card offload will take over USB, Thunderbolt, SATA, or network. Real-world speed presets and efficiency included.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="../index.html">The <span>Edit</span> Bay<span class="tagline">Free calculators &amp; tools for video creators</span></a>
+<nav class="main-nav">
+<a href="../index.html">Home</a>
+<a href="../tools/index.html" class="active">Tools</a>
+<a href="../gear.html">Gear</a>
+<a href="../resources.html">Resources</a>
+<a href="../about.html">About</a>
+</nav>
+</div>
+</header>
+<main>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Tools</a> &rsaquo; File Transfer Time Calculator</div>
+<h1 class="page-title">File Transfer Time Calculator</h1>
+<p class="intro">Offloading a full 1 TB card before the next shoot day? Enter the data size and pick your connection — this estimates the transfer time using real-world sustained speeds, not the numbers on the box.</p>
+<div class="card">
+<div class="form-row">
+<div><label>Data size</label><input type="number" id="t_size" value="500" min="0.01" step="0.01"></div>
+<div><label>Size unit</label><select id="t_unit"><option value="GB">GB</option><option value="MB">MB</option><option value="TB">TB</option></select></div>
+<div><label>Connection</label><select id="t_conn" onchange="toggleCustom()">
+<option value="28">USB 2.0 — card reader / drive (~28 MB/s)</option>
+<option value="95">UHS-I card reader (~95 MB/s)</option>
+<option value="280">UHS-II card reader (~280 MB/s)</option>
+<option value="350" selected>USB 3.0 / 3.1 Gen 1 (~350 MB/s)</option>
+<option value="520">SATA SSD (~520 MB/s)</option>
+<option value="850">USB 3.2 Gen 2 — 10 Gbps (~850 MB/s)</option>
+<option value="1100">10 Gb Ethernet (~1,100 MB/s)</option>
+<option value="2200">Thunderbolt 3/4 / USB4 (~2,200 MB/s)</option>
+<option value="2800">NVMe SSD, internal (~2,800 MB/s)</option>
+<option value="50">Wi-Fi 5 GHz, real-world (~50 MB/s)</option>
+<option value="110">Gigabit Ethernet (~110 MB/s)</option>
+<option value="custom">Custom speed&hellip;</option>
+</select></div>
+<div id="t_custom_wrap" style="display:none"><label>Custom speed (MB/s)</label><input type="number" id="t_custom" value="500" min="0.1" step="0.1"></div>
+<div><label>Efficiency</label><select id="t_eff"><option value="0.85">Typical (85%)</option><option value="1">Best case (100%)</option><option value="0.7">Busy disk / lots of small files (70%)</option></select></div>
+</div>
+<button onclick="calcTransfer()">Calculate transfer time</button>
+<div class="result" id="t_res"></div>
+</div>
+<p class="note">Math: time (sec) = data size (bytes, decimal) &divide; (sustained MB/s &times; efficiency). Preset speeds are realistic sustained rates, not the theoretical maximums printed on packaging (USB 3.0&rsquo;s 5 Gbps headline is 625 MB/s in theory; real transfers land near 350 MB/s). Efficiency accounts for protocol overhead, thermal throttling, and many small files — thousands of clips copy far slower than one big file at the same byte rate.</p>
+<h2>Related tools</h2>
+<ul>
+<li><a href="recording-time.html"><strong>Recording Time Estimator</strong></a> — how much footage your card or drive holds at your codec&rsquo;s bitrate.</li>
+<li><a href="upload-time.html"><strong>Upload Time Calculator</strong></a> — how long offloading takes over your internet connection instead.</li>
+<li><a href="file-size.html"><strong>Video File Size Estimator</strong></a> — estimate export sizes before you hit transfer.</li>
+</ul>
+<p>Buying the card itself? Our <a href="../guides/best-sd-cards-for-4k-video.html"><strong>best SD cards for 4K video guide</strong></a> explains V30/V60/V90 write speeds — but remember, <em>read</em> speed (and your card reader) is what sets offload time.</p>
+
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<div><strong style="color:#fff">The Edit Bay</strong><br>Free calculators &amp; tools for video creators.<br>No sign-up. No tracking. Just math that works.</div>
+<div><a href="../tools/index.html">All tools</a><br><a href="../about.html">About</a><br><a href="../resources.html">Resources</a></div>
+</div>
+</footer>
+<script>
+function toggleCustom(){
+  var conn = document.getElementById('t_conn').value;
+  document.getElementById('t_custom_wrap').style.display = (conn === 'custom') ? 'block' : 'none';
+}
+function calcTransfer(){
+  var size = parseFloat(document.getElementById('t_size').value) || 0;
+  var unit = document.getElementById('t_unit').value;
+  var conn = document.getElementById('t_conn').value;
+  var speedMB = (conn === 'custom') ? (parseFloat(document.getElementById('t_custom').value) || 0) : parseFloat(conn);
+  var eff = parseFloat(document.getElementById('t_eff').value);
+  var bytes = size * (unit === 'GB' ? 1e9 : unit === 'MB' ? 1e6 : 1e12);
+  var effBps = speedMB * 1e6 * eff;
+  if (bytes <= 0 || effBps <= 0){ document.getElementById('t_res').textContent = 'Enter a valid size and speed.'; return; }
+  var secs = bytes / effBps;
+  var h = Math.floor(secs / 3600), m = Math.floor((secs % 3600) / 60), s = Math.round(secs % 60);
+  var str = (h > 0 ? h + 'h ' : '') + m + 'm ' + s + 's';
+  document.getElementById('t_res').innerHTML = 'Estimated transfer time: <strong>' + str + '</strong><br><span style="font-size:.85em">at ' + (speedMB * eff).toFixed(0) + ' MB/s effective (' + (eff * 100).toFixed(0) + '% efficiency)</span>';
+}
+</script>
+</body>
+</html>
